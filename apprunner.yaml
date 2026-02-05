@@ -5,12 +5,12 @@ runtime: python311
 build:
   commands:
     build:
-      - pip3 install --no-cache-dir -r requirements.txt
+      - pip3 install --no-cache-dir -r relay/requirements.txt
 
 run:
   runtime-version: 3.11
   pre-run:
-    - pip3 install --no-cache-dir -r requirements.txt
+    - pip3 install --no-cache-dir -r relay/requirements.txt
   command: uvicorn relay.main:app --host 0.0.0.0 --port 8002 --workers 2 --proxy-headers
 
   network:
