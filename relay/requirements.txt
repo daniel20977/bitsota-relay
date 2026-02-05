@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+pydantic
+pytest
+requests
+httpx
+web3
+substrate_interface==1.7.11
+bittensor==9.12.2

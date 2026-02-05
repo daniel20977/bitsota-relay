@@ -1,0 +1,54 @@
+{
+  "_notes": {
+    "gui": "GUI mining runs continuously until you stop it; it uses the `mining` section below.",
+    "miner_local_og": "`scripts/miner_local_og.py` (and the GUI sidecar miner) can also read this file; it uses the `args` section below (including `iterations`).",
+    "train_val_overrides": "`train_examples`/`val_examples` map to (train_samples/val_samples) for scalar_linear; for mnist_binary/cifar10_binary they map to (n_samples=train+val, train_split=train/(train+val))."
+  },
+  "mining": {
+    "engine": "baseline",
+    "checkpoint_generations": 10,
+
+    "miner_task_count": 10,
+    "validator_task_count": 100,
+    "validate_every": 1000,
+    "train_examples": null,
+    "val_examples": null,
+    "feature_dim": null,
+    "fec_cache_size": 0,
+
+    "engine_params": {
+      "pop_size": 100,
+      "tournament_size": 10,
+      "mutation_prob": 0.9
+    }
+  },
+  "args": {
+    "workers": 1,
+    "iterations": 1000,
+    "validate_every": 1000,
+    "pop_size": 100,
+    "tournament_size": 10,
+    "mutation_prob": 0.9,
+    "engine": "archive",
+    "task_type": "cifar10_binary",
+    "seed": null,
+    "miner_task_count": 3,
+    "validator_task_count": null,
+    "fec_cache_size": 0,
+    "train_examples": null,
+    "val_examples": null,
+    "feature_dim": null,
+    "vector_dim": null,
+    "setup_max_ops": null,
+    "predict_max_ops": null,
+    "learn_max_ops": null,
+    "scalar_regs": null,
+    "vector_regs": null,
+    "matrix_regs": null,
+    "log_every": 10,
+    "verbose": false
+  },
+  "env": {
+    "MINER_SUBMISSION_COOLDOWN_SECONDS": 60
+  }
+}

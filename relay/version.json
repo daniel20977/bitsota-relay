@@ -1,0 +1,9 @@
+{
+  "version": "0.0.3",
+  "versionCode": 20251222003,
+  "desc": "Fix certificate bug during CIFAR10 dataset download",
+  "mac": "https://app-builds-bitsota.fra1.digitaloceanspaces.com/app-builds-bitsota/builds/macos-arm64/BitSota.dmg",
+  "linux": "https://app-builds-bitsota.fra1.digitaloceanspaces.com/app-builds-bitsota/builds/linux-x64/BitSota-linux-x64.tar.gz",
+  "windows":"https://app-builds-bitsota.fra1.digitaloceanspaces.com/app-builds-bitsota/builds/windows-x64/BitSota-windows-x64.zip"
+
+}

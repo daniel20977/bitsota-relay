@@ -1,0 +1,94 @@
+name: Deploy Validator Relay
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'relay/**'
+      - '.github/workflows/deploy-relay.yml'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create image tag
+        id: tag
+        run: |
+          sha=${GITHUB_SHA::8}
+          timestamp=$(date +%s)
+          echo "build_id=${sha}-${timestamp}" >> $GITHUB_OUTPUT
+      - name: Login to DO Container Registry
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.CI_CD_TOKEN_DIGITALOCEAN }}
+
+      - name: Configure DO Container Registry
+        run: doctl registry login --expiry-seconds 300
+
+      - name: Build and push relay server
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./relay/Dockerfile
+          push: true
+          tags: registry.digitalocean.com/${{ secrets.REGISTRY_NAME_DIGITALOCEAN }}/relay:${{ steps.tag.outputs.build_id }},registry.digitalocean.com/${{ secrets.REGISTRY_NAME_DIGITALOCEAN }}/relay:latest
+
+      - name: Deploy to VM
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ secrets.HOST_DIGITALOCEAN }}
+          username: ${{ secrets.USER_DIGITALOCEAN }}
+          key: ${{ secrets.SSH_KEY_DIGITALOCEAN }}
+          script: |
+            set -euo pipefail
+
+            SUDO=""
+            if command -v sudo >/dev/null 2>&1; then
+              SUDO="sudo"
+            fi
+
+            # Login to registry
+            doctl registry login --expiry-seconds 300
+            
+            # Pull new image
+            docker pull registry.digitalocean.com/${{ secrets.REGISTRY_NAME_DIGITALOCEAN }}/relay:latest
+            
+            # Ensure local Postgres is running on this VM (relay connects via DATABASE_URL in /home/${{ secrets.USER_DIGITALOCEAN }}/.env.relay)
+            if command -v systemctl >/dev/null 2>&1; then
+              if systemctl list-unit-files 2>/dev/null | grep -q '^postgresql\\.service'; then
+                $SUDO systemctl start postgresql || true
+              fi
+            fi
+
+            # Stop and remove existing container
+            docker stop hivetensor-relay || true
+            docker rm hivetensor-relay || true
+            
+            # Start new container with .env file
+            #
+            # IMPORTANT: When using host Postgres on the same VM, set:
+            #   DATABASE_URL=postgresql://<user>:<pass>@127.0.0.1:5432/<db>
+            # in /home/${{ secrets.USER_DIGITALOCEAN }}/.env.relay
+            #
+            # We use host networking so the container can reach the VM's 127.0.0.1:5432.
+            docker run -d --name hivetensor-relay \
+              --restart unless-stopped \
+              --network host \
+              --env-file /home/${{ secrets.USER_DIGITALOCEAN }}/.env.relay \
+              --security-opt=no-new-privileges:true \
+              --log-driver json-file \
+              --log-opt max-size=10m \
+              --log-opt max-file=3 \
+              registry.digitalocean.com/${{ secrets.REGISTRY_NAME_DIGITALOCEAN }}/relay:latest
+            
+            # Cleanup
+            docker system prune -f

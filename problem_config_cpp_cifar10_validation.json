@@ -1,0 +1,56 @@
+{
+  "_notes": {
+    "source": "Mapped from cpp/automl_zero/run_baseline.sh final_tasks block (validation-style evaluation, not search).",
+    "what_this_is": "A heavier config that increases both mining task suite size and validator suite size to 100 (closest match to C++ final_tasks.num_tasks=100).",
+    "how_to_use_local_harness": "python3 -m scripts.miner_local_og --config problem_config_cpp_cifar10_validation.json",
+    "caveat": "Our CIFAR10BinaryTask samples from all class pairs/projections; the C++ script explicitly lists held_out_pairs for search vs final. We cannot represent that subset/full-pairs split in the current JSON schema."
+  },
+  "mining": {
+    "engine": "baseline",
+    "checkpoint_generations": 10000,
+    "miner_task_count": 100,
+    "validator_task_count": 100,
+    "engine_params": {
+      "pop_size": 100,
+      "tournament_size": 10,
+      "mutation_prob": 0.9,
+      "setup_max_ops": 7,
+      "predict_max_ops": 11,
+      "learn_max_ops": 23,
+      "scalar_regs": 5,
+      "vector_regs": 9,
+      "matrix_regs": 2,
+      "vector_dim": 16,
+      "cifar_seed": 1000060
+    }
+  },
+  "args": {
+    "task_type": "cifar10_binary",
+    "engine": "baseline",
+    "workers": 1,
+    "seed": 1000060,
+    "iterations": 1000000,
+    "feature_dim": 16,
+    "train_examples": 8000,
+    "val_examples": 1000,
+    "pop_size": 100,
+    "miner_task_count": 100,
+    "tournament_size": 10,
+    "mutation_prob": 0.9,
+    "setup_max_ops": 7,
+    "predict_max_ops": 11,
+    "learn_max_ops": 23,
+    "scalar_regs": 5,
+    "vector_regs": 9,
+    "matrix_regs": 2,
+    "vector_dim": 16,
+    "cifar_seed": 1000060,
+    "validator_task_count": 100,
+    "validate_every": 10000,
+    "log_every": 10000,
+    "verbose": true
+  },
+  "env": {
+    "VALIDATOR_TASK_COUNT": 100
+  }
+}
