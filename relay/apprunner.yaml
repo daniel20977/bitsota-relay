@@ -1,6 +1,6 @@
 version: 1.0
 
-runtime: python312
+runtime: python311
 
 build:
   commands:
