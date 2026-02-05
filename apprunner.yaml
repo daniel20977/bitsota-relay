@@ -15,3 +15,9 @@ run:
 
   network:
     port: 8002
+
+  secrets:
+    - name: DATABASE_URL
+      value-from: "arn:aws:secretsmanager:us-east-1:960012980820:secret:bitsota/relay/db_url-rKMLYs"
+    - name: ADMIN_AUTH_TOKEN
+      value-from: "arn:aws:secretsmanager:us-east-1:960012980820:secret:bitsota/relay/admin_token-lCEu8A"
