@@ -2,10 +2,10 @@ version: 1.0
 
 runtime: python311
 
-# build:
-#   commands:
-#     build:
-#       - pip3 install --no-cache-dir -r requirements.txt
+build:
+  commands:
+    build:
+      - pip3 install --no-cache-dir -r requirements.txt
 
 run:
   runtime-version: 3.11
